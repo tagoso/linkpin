@@ -284,10 +284,10 @@ export function Entry() {
 
       <div>
         <button onClick={handleSortByClickCount} className="m-1.5 ml-0">
-          Clicks {isCountAscending ? "↓" : "↑"} {/* Display clicks ↑ or ↓ based on click clicks sort order */}
+          Clicks{isCountAscending ? "↓" : "↑"} {/* Display clicks ↑ or ↓ based on click clicks sort order */}
         </button>
         <button onClick={handleSortByLastVisit} className="m-1.5">
-          Last Visit {isLastVisitAscending ? "↑" : "↓"} {/* Display Last Visit ↑ or ↓ based on last visit sort order */}
+          Last Visit{isLastVisitAscending ? "↑" : "↓"} {/* Display Last Visit ↑ or ↓ based on last visit sort order */}
         </button>
         <button onClick={handleSortAlphabetically} className="m-1.5">
           {isAscending ? "ABC" : "CBA"} {/* Display ABC or CBA based on alphabetical sort order */}
