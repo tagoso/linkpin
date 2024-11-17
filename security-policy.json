@@ -1,0 +1,8 @@
+{
+  "policies": [
+    {
+      "match": "**/*",
+      "security_policy": "standard"
+    }
+  ]
+}
