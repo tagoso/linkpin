@@ -33,7 +33,15 @@ export function LoginButton() {
   };
 
   return (
-    <button onClick={handleClick} disabled={isLoggingIn} className="px-4 py-1 bg-blue-500 text-white rounded mr-2">
+    <button
+      onClick={handleClick}
+      disabled={isLoggingIn}
+      className={`${
+        identity
+          ? "px-4 py-1 bg-blue-400 text-white rounded mr-4" // Logout button (current style)
+          : "px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200" // Login button (new style)
+      }`}
+    >
       {text()}
     </button>
   );

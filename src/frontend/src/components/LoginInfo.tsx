@@ -1,15 +1,18 @@
 export default function LoginInfo({ className }: { className?: string }) {
   return (
     <div className={`flex flex-col items-center ${className}`}>
+      <div className="flex justify-center mt-6 mb-4 w-full">
+        <span className="text-center w-60 h-auto text-lg">A Secure Bookmark Manager</span>
+      </div>
       {/* Row for ICP logo and Open Source link */}
-      <div className="flex items-center mt-2">
-        <img alt="ICP Logo 100% on-chain" className="mt-2 w-60 h-auto" src="/icpLogo.svg" />
+      <div className="flex justify-center items-center mt-2 w-full">
+        <img alt="ICP Logo 100% on-chain" className="w-52 h-auto" src="/icpLogo.svg" />
       </div>
       <a
         href="https://github.com/tagoso/urll"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-800 underline"
+        className="text-blue-300 underline transition ease-in-out delay-150 hover:text-blue-600 mt-2"
       >
         Source Code
       </a>
