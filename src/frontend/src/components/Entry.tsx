@@ -269,13 +269,13 @@ export function Entry() {
               handleInsert();
             }
           }}
-          maxLength={2083} // ここでURLの長さを制限
-          className="flex-grow bg-slate-50 border border-gray-300 rounded-md p-2 h-8 mr-2" // 入力欄をflex-growで拡張し、右にマージン
+          maxLength={2083}
+          className="flex-grow bg-slate-50 border border-gray-300 rounded-md p-2 h-8 mr-2  min-w-0" // Input fields extended with flex-grow, margin to the right
         />
 
         <button
           onClick={handleInsert}
-          className="bg-green-500 text-white rounded shadow-md h-8 w-16 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
+          className="bg-green-500 text-white rounded shadow-md h-8 w-16 min-w-12 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
           disabled={isLoading}
         >
           Save
