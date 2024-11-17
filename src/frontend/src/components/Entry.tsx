@@ -240,7 +240,9 @@ export function Entry() {
 
   // Toggle between displaying original URLs and formatted URLs, saving any unsaved edits
   const handleToggleEdit = () => {
-    saveAllEdits(); // Save edits before toggling
+    if (isEditMode) {
+      saveAllEdits(); // Save edits before toggling
+    }
     setIsEditMode(!isEditMode);
   };
 
@@ -249,22 +251,29 @@ export function Entry() {
     setEditedEntries((prev) => ({ ...prev, [index]: value }));
   };
 
-  // Save the edited URL when focus is lost or mode is toggled
-  const handleBlurSave = (index: number) => {
+  const handleBlurSave = async (index: number) => {
     const updatedUrl = editedEntries[index];
-    if (updatedUrl) {
-      setEntries((prevEntries) =>
-        prevEntries.map((entry, i) =>
-          i === index
-            ? { url: updatedUrl, clickCount: entry.clickCount, lastClicked: entry.lastClicked, time: entry.time }
-            : entry
-        )
-      );
-      setEditedEntries((prev) => {
-        const newEdits = { ...prev };
-        delete newEdits[index];
-        return newEdits;
-      });
+    const originalUrl = entries[index].url; // Get original URL
+
+    if (updatedUrl && updatedUrl !== originalUrl) {
+      try {
+        // Call updateEntry on the backend
+        await backend.updateEntry(originalUrl, updatedUrl);
+
+        // Update front-end status
+        setEntries((prevEntries) =>
+          prevEntries.map((entry, i) => (i === index ? { ...entry, url: updatedUrl } : entry))
+        );
+
+        // Reset edited status
+        setEditedEntries((prev) => {
+          const newEdits = { ...prev };
+          delete newEdits[index];
+          return newEdits;
+        });
+      } catch (error) {
+        console.error("Error updating entry:", error);
+      }
     }
   };
 
@@ -280,14 +289,14 @@ export function Entry() {
 
   // Save all edits for each entry
   const saveAllEdits = () => {
-    setEntries((prevEntries) =>
-      prevEntries.map((entry, index) => ({
+    setEntries((prevEntries) => {
+      return prevEntries.map((entry, index) => ({
         url: editedEntries[index] || entry.url,
         clickCount: entry.clickCount,
         lastClicked: entry.lastClicked,
         time: entry.time,
-      }))
-    );
+      }));
+    });
     setEditedEntries({});
   };
 

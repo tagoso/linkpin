@@ -87,6 +87,32 @@ actor {
         return Iter.toArray(userBookmark.entries());
     };
 
+    // Update an existing entry for the caller
+    public shared (msg) func updateEntry(url : Text, updatedUrl : Text) : async () {
+        let caller = msg.caller;
+        let userBookmark = getUserBookmarkMap(caller);
+
+        // Get the existing entry
+        switch (userBookmark.get(url)) {
+            case (?entry) {
+                // Create the updated entry
+                let updatedEntry = {
+                    url = updatedUrl; // Update the URL
+                    time = entry.time; // Keep the original time
+                    clickCount = entry.clickCount; // Preserve the click count
+                    lastClicked = entry.lastClicked; // Preserve last clicked time
+                };
+
+                // Remove the old entry and add the updated one
+                ignore userBookmark.remove(url); // Remove the old URL
+                userBookmark.put(updatedUrl, updatedEntry); // Add the updated entry
+            };
+            case null {
+                // Do nothing if the entry doesn't exist
+            };
+        };
+    };
+
     // System upgrade hooks
     system func preupgrade() {
         // Convert HashMap to stable array before upgrade
