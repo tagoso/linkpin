@@ -66,6 +66,12 @@ export function Entry() {
       return;
     }
 
+    // Check for URL length
+    if (url.length > 2083) {
+      alert(`The URL is too long. Maximum length is 2083 characters.`);
+      return;
+    }
+
     // Automatically prepend "https://" if URL does not start with "http://" or "https://"
     const formattedUrl = /^(http:\/\/|https:\/\/)/.test(url) ? url : `https://${url}`;
 
@@ -263,6 +269,7 @@ export function Entry() {
               handleInsert();
             }
           }}
+          maxLength={2083} // ここでURLの長さを制限
           className="w-full max-w-screen-sm bg-slate-50 border border-gray-300 rounded-md p-2"
         />
 
