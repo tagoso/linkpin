@@ -1,8 +1,8 @@
 export default function LoginInfo({ className }: { className?: string }) {
   return (
     <div className={`flex flex-col items-center ${className}`}>
-      <div className="flex justify-center mt-6 mb-4 w-full">
-        <span className="text-center w-60 h-auto text-lg">A Secure Bookmark Manager</span>
+      <div className="flex justify-center mt-6 mb-4">
+        <span className="text-center w-72 h-auto text-lg">A Secure Bookmark Manager</span>
       </div>
       {/* Row for ICP logo and Open Source link */}
       <div className="flex justify-center items-center mt-2 w-full">
