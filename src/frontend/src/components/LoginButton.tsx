@@ -3,15 +3,23 @@ import { useInternetIdentity } from "ic-use-internet-identity";
 export function LoginButton() {
   const { isLoggingIn, login, clear, identity } = useInternetIdentity();
 
-  // If the user is logged in, clear the identity. Otherwise, log in.
+  // Handle login or logout click
   function handleClick() {
     if (identity) {
-      clear();
+      handleLogout(); // Use the handleLogout function for logout
     } else {
       login();
     }
   }
 
+  // Logout function to clear states and optionally reload the page
+  function handleLogout() {
+    clear(); // Clear Internet Identity session
+    // Optionally force reload the page to reset all states
+    window.location.reload();
+  }
+
+  // Render button text based on the login state
   const text = () => {
     if (identity) {
       return "Logout";
@@ -19,7 +27,7 @@ export function LoginButton() {
       return (
         <>
           <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-            <circle className="opacity-0" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <circle className="opacity-0" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path
               className="opacity-75"
               fill="currentColor"

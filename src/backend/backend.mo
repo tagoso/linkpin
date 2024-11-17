@@ -3,6 +3,7 @@ import Text "mo:base/Text";
 import Iter "mo:base/Iter";
 import Time "mo:base/Time";
 import Int "mo:base/Int";
+import Principal "mo:base/Principal";
 
 actor {
     type Name = Text;
@@ -14,13 +15,30 @@ actor {
         lastClicked : ?Text; // Optional field to store the last clicked timestamp
     };
 
-    stable var stableBookmarkEntries : [(Name, Entry)] = [];
+    type UserBookmarks = Map.HashMap<Name, Entry>;
 
-    // Initialize the bookmark as a HashMap
-    var bookmark = Map.HashMap<Name, Entry>(0, Text.equal, Text.hash);
+    // Initialize the user-specific bookmarks as a HashMap
+    var userBookmarks = Map.HashMap<Principal, UserBookmarks>(0, Principal.equal, Principal.hash);
 
-    // Insert a new entry into the bookmark with the current timestamp
-    public func insert(url : Text) : async () {
+    // Helper function to get or create a user's bookmark map
+    private func getUserBookmarkMap(user : Principal) : UserBookmarks {
+        switch (userBookmarks.get(user)) {
+            case (?bookmarkMap) {
+                bookmarkMap;
+            };
+            case null {
+                let newMap = Map.HashMap<Name, Entry>(0, Text.equal, Text.hash);
+                userBookmarks.put(user, newMap);
+                newMap;
+            };
+        };
+    };
+
+    // Insert a new entry into the user's bookmark with the current timestamp
+    public shared (msg) func insert(url : Text) : async () {
+        let caller = msg.caller;
+        let userBookmark = getUserBookmarkMap(caller);
+
         let timestamp = Time.now(); // Get current timestamp
         let formattedTime = Int.toText(timestamp / 1_000_000_000); // Convert timestamp to seconds
         let entryWithTime = {
@@ -29,42 +47,39 @@ actor {
             clickCount = 0;
             lastClicked = null;
         };
-        bookmark.put(url, entryWithTime);
+        userBookmark.put(url, entryWithTime);
     };
 
-    // Delete an entry by URL
-    public func deleteEntry(url : Text) : async () {
-        ignore bookmark.remove(url);
+    // Delete an entry by URL for the caller
+    public shared (msg) func deleteEntry(url : Text) : async () {
+        let caller = msg.caller;
+        let userBookmark = getUserBookmarkMap(caller);
+        ignore userBookmark.remove(url);
     };
 
-    // Increment the click count for a specific URL and update the last clicked timestamp in seconds
-    public func incrementClickCount(url : Text) : async () {
-        switch (bookmark.get(url)) {
+    // Increment the click count for a specific URL for the caller
+    public shared (msg) func incrementClickCount(url : Text) : async () {
+        let caller = msg.caller;
+        let userBookmark = getUserBookmarkMap(caller);
+
+        switch (userBookmark.get(url)) {
             case (?entry) {
                 let updatedEntry = {
                     url = entry.url;
                     time = entry.time;
                     clickCount = entry.clickCount + 1;
-                    lastClicked = ?Int.toText(Time.now() / 1_000_000_000) // Update lastClicked in seconds
+                    lastClicked = ?Int.toText(Time.now() / 1_000_000_000); // Update lastClicked in seconds
                 };
-                bookmark.put(url, updatedEntry);
+                userBookmark.put(url, updatedEntry);
             };
             case null {};
         };
     };
 
-    // Retrieve all entries in the bookmark
-    public query func getAllEntries() : async [(Name, Entry)] {
-        return Iter.toArray(bookmark.entries());
-    };
-
-    // Pre-upgrade hook to serialize the bookmark entries
-    system func preupgrade() {
-        stableBookmarkEntries := Iter.toArray(bookmark.entries());
-    };
-
-    // Post-upgrade hook to deserialize the bookmark entries
-    system func postupgrade() {
-        bookmark := Map.fromIter(stableBookmarkEntries.vals(), 0, Text.equal, Text.hash);
+    // Retrieve all entries for the caller
+    public shared (msg) func getEntries() : async [(Name, Entry)] {
+        let caller = msg.caller;
+        let userBookmark = getUserBookmarkMap(caller);
+        return Iter.toArray(userBookmark.entries());
     };
 };

@@ -25,30 +25,51 @@ export function Entry() {
   const [isEditMode, setIsEditMode] = useState<boolean>(false); // State to track display mode (original or formatted)
   const [editedEntries, setEditedEntries] = useState<{ [index: number]: string }>({}); // Track edits for each entry
 
-  // Fetch all entries when the component mounts
   useEffect(() => {
     async function fetchEntries() {
       if (backend && identity) {
-        const allEntries = await backend.getAllEntries();
-        const sortedEntries = allEntries
-          .map((entry) => ({
-            url: entry[0],
-            clickCount: BigInt(entry[1].clickCount),
-            lastClicked: entry[1].lastClicked[0] ?? null, // Optional lastClicked timestamp
-            time: entry[1].time, // Initial insertion timestamp
-          }))
-          .sort((a, b) => {
-            // Sort by the `time` field in descending order (newest first)
-            const timeA = parseInt(a.time, 10);
-            const timeB = parseInt(b.time, 10);
-            return timeB - timeA; // Descending order
-          });
+        try {
+          // Fetch the latest entries from the backend
+          const allEntries = await backend.getEntries();
+          const sortedEntries = allEntries
+            .map((entry) => ({
+              url: entry[0],
+              clickCount: BigInt(entry[1].clickCount),
+              lastClicked: entry[1].lastClicked[0] ?? null, // Handle optional lastClicked
+              time: entry[1].time,
+            }))
+            .sort((a, b) => {
+              // Sort entries by time in descending order (newest first)
+              const timeA = parseInt(a.time, 10);
+              const timeB = parseInt(b.time, 10);
+              return timeB - timeA;
+            });
 
-        setEntries(sortedEntries);
+          setEntries(sortedEntries); // Update the entries state
+        } catch (error) {
+          console.error("Error fetching entries:", error);
+        }
+      } else {
+        // Clear entries when no identity is available
+        setEntries([]);
       }
     }
-    fetchEntries();
+
+    fetchEntries(); // Fetch entries on component mount or when dependencies change
   }, [backend, identity]);
+
+  useEffect(() => {
+    // Clear entries explicitly on logout
+    if (!identity) {
+      // Reset all relevant states on logout
+      setEntries([]); // Clear entries
+      setEditedEntries({}); // Clear edited entries
+      setURL(""); // Reset the input URL
+      setIsEditMode(false); // Exit edit mode
+      setIsLoading(false); // Reset loading state
+      setLoadingDeletes([]); // Clear loading deletes
+    }
+  }, [identity]);
 
   // Function to insert a new entry
   async function handleInsert() {
@@ -83,54 +104,47 @@ export function Entry() {
     }
 
     setIsLoading(true); // Start loading
-
     try {
-      await backend.insert(formattedUrl);
-
-      // Add the new entry at the beginning of the entries list
-      setEntries([
-        { url: formattedUrl, clickCount: BigInt(0), lastClicked: null, time: Math.floor(Date.now() / 1000).toString() },
-        ...entries,
-      ]);
-      setURL(""); // Reset the input field
+      await backend.insert(url);
+      const timestamp = Math.floor(Date.now() / 1000).toString();
+      setEntries([{ url, clickCount: BigInt(0), lastClicked: null, time: timestamp }, ...entries]);
+      setURL("");
     } catch (error) {
       console.error("Error inserting entry:", error);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   }
 
-  // Function to delete an entry
+  // Delete an entry
   async function handleDelete(url: string) {
     if (!backend || !identity) return;
-
-    // Add the URL to the loading state
     setLoadingDeletes((prev) => [...prev, url]);
-
     try {
-      await backend.deleteEntry(url); // Call backend to delete the entry
-      setEntries(entries.filter((entry) => entry.url !== url)); // Remove the deleted entry from the list
+      await backend.deleteEntry(url);
+      setEntries(entries.filter((entry) => entry.url !== url));
     } catch (error) {
       console.error("Error deleting entry:", error);
     } finally {
-      // Remove the URL from the loading state
-      setLoadingDeletes((prev) => prev.filter((loadingUrl) => loadingUrl !== url));
+      setLoadingDeletes((prev) => prev.filter((u) => u !== url));
     }
   }
 
-  // Function to increment click count when URL is clicked
-  const handleClickCountIncrement = async (url: string) => {
+  // Increment the click count for a URL
+  async function handleClickCountIncrement(url: string) {
     if (!backend || !identity) return;
-    await backend.incrementClickCount(url);
-
-    // Set lastClicked to the current Unix timestamp in seconds
-    const timestamp = Math.floor(Date.now() / 1000).toString(); // Get the current Unix timestamp (in seconds)
-    setEntries((prevEntries) =>
-      prevEntries.map((entry) =>
-        entry.url === url ? { ...entry, clickCount: entry.clickCount + BigInt(1), lastClicked: timestamp } : entry
-      )
-    );
-  };
+    try {
+      await backend.incrementClickCount(url);
+      const timestamp = Math.floor(Date.now() / 1000).toString();
+      setEntries((prevEntries) =>
+        prevEntries.map((entry) =>
+          entry.url === url ? { ...entry, clickCount: entry.clickCount + BigInt(1), lastClicked: timestamp } : entry
+        )
+      );
+    } catch (error) {
+      console.error("Error incrementing click count:", error);
+    }
+  }
 
   // Function to format display URL by removing "https://", "http://", "www.", and trailing slashes only for display
   const formatUrl = (url: string) => {
