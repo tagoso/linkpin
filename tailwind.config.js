@@ -3,7 +3,7 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     fontFamily: {
-      sans: ["Open Sans", "Sans-serif"],
+      sans: ['Poppins', 'sans-serif'],
     },
     extend: {},
   },
