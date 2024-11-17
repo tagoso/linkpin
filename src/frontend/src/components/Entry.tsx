@@ -110,9 +110,10 @@ export function Entry() {
 
     setIsLoading(true); // Start loading
     try {
-      await backend.insert(url);
+      // Use formattedUrl instead of raw url
+      await backend.insert(formattedUrl);
       const timestamp = Math.floor(Date.now() / 1000).toString();
-      setEntries([{ url, clickCount: BigInt(0), lastClicked: null, time: timestamp }, ...entries]);
+      setEntries([{ url: formattedUrl, clickCount: BigInt(0), lastClicked: null, time: timestamp }, ...entries]);
       setURL("");
     } catch (error) {
       console.error("Error inserting entry:", error);
@@ -124,13 +125,30 @@ export function Entry() {
   // Delete an entry
   async function handleDelete(url: string) {
     if (!backend || !identity) return;
-    setLoadingDeletes((prev) => [...prev, url]);
+
+    // Optimistically update the UI by removing the entry from the list immediately
+    setEntries((prevEntries) => prevEntries.filter((entry) => entry.url !== url));
+
+    // Add the URL to the loadingDeletes state
+    setLoadingDeletes((prev) => [...new Set([...prev, url])]); // Avoid duplicates
+
     try {
+      // Perform the backend deletion
       await backend.deleteEntry(url);
-      setEntries(entries.filter((entry) => entry.url !== url));
     } catch (error) {
       console.error("Error deleting entry:", error);
+
+      // If deletion fails, re-add the entry back to the list
+      const allEntries = await backend.getEntries();
+      const updatedEntries = allEntries.map((entry) => ({
+        url: entry[0],
+        clickCount: BigInt(entry[1].clickCount),
+        lastClicked: entry[1].lastClicked[0] ?? null,
+        time: entry[1].time,
+      }));
+      setEntries(updatedEntries);
     } finally {
+      // Remove the URL from the loadingDeletes state
       setLoadingDeletes((prev) => prev.filter((u) => u !== url));
     }
   }
@@ -280,22 +298,28 @@ export function Entry() {
       <div className="flex items-center max-w-screen-sm w-full gap-1 mt-2 mb-6">
         <input
           type="text"
-          placeholder="Type a URL "
+          placeholder="Type a URL"
           value={url}
           onChange={(e) => setURL(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !isLoading) {
               handleInsert();
             }
           }}
           maxLength={2083}
-          className="flex-grow bg-slate-50 border border-gray-300 rounded-md p-2 h-8 mr-2  min-w-0" // Input fields extended with flex-grow, margin to the right
+          disabled={isLoading} // Disable the input field during loading
+          className={`flex-grow p-2 h-8 mr-2 min-w-0 rounded-md border transition-all duration-200 
+      ${
+        isLoading
+          ? "bg-gray-300 cursor-not-allowed border-gray-400" // Apply disabled styles
+          : "bg-slate-50 border-gray-300"
+      }`}
         />
 
         <button
           onClick={handleInsert}
           className="bg-green-500 text-white rounded shadow-md h-8 w-16 min-w-12 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
-          disabled={isLoading}
+          disabled={isLoading} // Disable the button during loading
         >
           Save
         </button>
@@ -317,7 +341,6 @@ export function Entry() {
         <button onClick={handleToggleEdit} className="m-1.5">
           {isEditMode ? "Save" : "Edit"}
         </button>
-
         <ul className="list-none p-0 m-0 max-w-screen-sm w-full">
           {isEntriesLoading ? (
             <li className="flex items-center justify-start mt-2">
@@ -335,6 +358,8 @@ export function Entry() {
                 ></path>
               </svg>
             </li>
+          ) : entries.length === 0 ? (
+            <p className="flex items-center mb-0.5 mt-2">No bookmarks found.</p>
           ) : (
             entries.map((entry, index) => (
               <li key={index} className="flex items-center mb-0.5 mt-2 break-words">
@@ -342,7 +367,7 @@ export function Entry() {
                   <button
                     onClick={() => handleDelete(entry.url)}
                     className="mr-0.5 shrink-0 flex items-center justify-center h-5 w-5"
-                    disabled={loadingDeletes.includes(entry.url)}
+                    disabled={loadingDeletes.includes(entry.url)} // Disable button if currently deleting
                   >
                     {loadingDeletes.includes(entry.url) ? (
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -388,7 +413,7 @@ export function Entry() {
                     value={editedEntries[index] ?? entry.url}
                     onChange={(e) => handleEditChange(index, e.target.value)}
                     onBlur={() => handleBlurSave(index)}
-                    className="w-full bg-pink-50 rounded-md ml-1 h-6"
+                    className="w-full rounded-md ml-1 h-6 bg-transparent decoration-inherit"
                   />
                 )}
               </li>
