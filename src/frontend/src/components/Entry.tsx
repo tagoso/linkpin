@@ -275,7 +275,7 @@ export function Entry() {
       <div className="flex items-center max-w-screen-sm w-full gap-1 mt-2 mb-6">
         <input
           type="text"
-          placeholder="https://..."
+          placeholder="Type a URL "
           value={url}
           onChange={(e) => setURL(e.target.value)}
           onKeyDown={(e) => {
