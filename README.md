@@ -1,4 +1,4 @@
-# URLL: A Secure & Simple Bookmark Manager
+# URLL: A Simple Bookmark Manager
 
 URLL is live. Start today!
 [`https://urll.tago.so/`](https://urll.tago.so/)
