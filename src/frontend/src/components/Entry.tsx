@@ -16,6 +16,7 @@ export function Entry() {
   const { identity } = useInternetIdentity(); // Getting the identity from Internet Identity
   const [url, setURL] = useState<string>(""); // Single input field for URL
   const [entries, setEntries] = useState<Entry[]>([]); // State to hold all entries
+  const [isEntriesLoading, setIsEntriesLoading] = useState<boolean>(true); // Loading the entry
   const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for the Save button
   const [loadingDeletes, setLoadingDeletes] = useState<string[]>([]); // URLs currently being deleted
   const [isAscending, setIsAscending] = useState<boolean>(true); // State to track alphabetical sort order
@@ -27,6 +28,7 @@ export function Entry() {
 
   useEffect(() => {
     async function fetchEntries() {
+      setIsEntriesLoading(true);
       if (backend && identity) {
         try {
           // Fetch the latest entries from the backend
@@ -48,10 +50,13 @@ export function Entry() {
           setEntries(sortedEntries); // Update the entries state
         } catch (error) {
           console.error("Error fetching entries:", error);
+        } finally {
+          setIsEntriesLoading(false);
         }
       } else {
         // Clear entries when no identity is available
         setEntries([]);
+        setIsEntriesLoading(false);
       }
     }
 
@@ -312,64 +317,83 @@ export function Entry() {
         <button onClick={handleToggleEdit} className="m-1.5">
           {isEditMode ? "Save" : "Edit"}
         </button>
-        <ul className="list-none p-0 m-0 max-w-screen-sm w-full	">
-          {entries.map((entry, index) => (
-            <li key={index} className="flex items-center mb-0.5 mt-2 break-words">
-              {isEditMode && (
-                <button
-                  onClick={() => handleDelete(entry.url)}
-                  className="mr-0.5 shrink-0 flex items-center justify-center h-5 w-5"
-                  disabled={loadingDeletes.includes(entry.url)}
-                >
-                  {loadingDeletes.includes(entry.url) ? (
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-0"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                  ) : (
-                    "🗑️"
-                  )}
-                </button>
-              )}
-              {!isEditMode ? (
-                <div className="inline-block">
-                  <a
-                    href={entry.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => handleClickCountIncrement(entry.url)}
-                    className="no-underline text-inherit"
-                  >
-                    {formatUrl(entry.url)}{" "}
-                  </a>
-                  <span className="text-sm text-gray-400">
-                    {" "}
-                    {entry.clickCount.toString()} clicks
-                    {formatElapsedTime(entry.lastClicked) && <>, {formatElapsedTime(entry.lastClicked)} ago</>}
-                  </span>
-                </div>
-              ) : (
-                <input
-                  type="text"
-                  value={editedEntries[index] ?? entry.url}
-                  onChange={(e) => handleEditChange(index, e.target.value)}
-                  onBlur={() => handleBlurSave(index)}
-                  className="w-full bg-pink-50 rounded-md ml-1 h-6"
-                />
-              )}
+
+        <ul className="list-none p-0 m-0 max-w-screen-sm w-full">
+          {isEntriesLoading ? (
+            <li className="flex items-center justify-start mt-2">
+              <svg
+                className="animate-spin h-6 w-6 text-gray-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
             </li>
-          ))}
+          ) : (
+            entries.map((entry, index) => (
+              <li key={index} className="flex items-center mb-0.5 mt-2 break-words">
+                {isEditMode && (
+                  <button
+                    onClick={() => handleDelete(entry.url)}
+                    className="mr-0.5 shrink-0 flex items-center justify-center h-5 w-5"
+                    disabled={loadingDeletes.includes(entry.url)}
+                  >
+                    {loadingDeletes.includes(entry.url) ? (
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-0"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      "🗑️"
+                    )}
+                  </button>
+                )}
+                {!isEditMode ? (
+                  <div className="inline-block">
+                    <a
+                      href={entry.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => handleClickCountIncrement(entry.url)}
+                      className="no-underline text-inherit"
+                    >
+                      {formatUrl(entry.url)}{" "}
+                    </a>
+                    <span className="text-sm text-gray-400">
+                      {" "}
+                      {entry.clickCount.toString()} clicks
+                      {formatElapsedTime(entry.lastClicked) && <>, {formatElapsedTime(entry.lastClicked)} ago</>}
+                    </span>
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    value={editedEntries[index] ?? entry.url}
+                    onChange={(e) => handleEditChange(index, e.target.value)}
+                    onBlur={() => handleBlurSave(index)}
+                    className="w-full bg-pink-50 rounded-md ml-1 h-6"
+                  />
+                )}
+              </li>
+            ))
+          )}
         </ul>
       </div>
     </div>
