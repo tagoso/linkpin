@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { ActorSubclass } from "@dfinity/agent";
 import { _SERVICE } from "../../../declarations/backend/backend.did"; // Import the backend service type
 import { useBackend } from "../ic/Actors"; // Custom hook to get the backend actor
@@ -22,6 +22,7 @@ export function Entry() {
   const [isAscending, setIsAscending] = useState<boolean>(true); // State to track alphabetical sort order
   const [isCountAscending, setIsCountAscending] = useState<boolean>(false); // State to track click count sort order
   const [isLastVisitAscending, setIsLastVisitAscending] = useState<boolean>(true); // State to track last visit sort order
+  const inputRef = useRef<HTMLInputElement>(null); // Ref for the input field
 
   const [isEditMode, setIsEditMode] = useState<boolean>(false); // State to track display mode (original or formatted)
   const [editedEntries, setEditedEntries] = useState<{ [index: number]: string }>({}); // Track edits for each entry
@@ -119,6 +120,7 @@ export function Entry() {
       console.error("Error inserting entry:", error);
     } finally {
       setIsLoading(false);
+      inputRef.current?.focus(); // Focus back to the input field
     }
   }
 
@@ -297,6 +299,7 @@ export function Entry() {
     <div className="entry-container" style={{ maxWidth: "100vw", width: "min(100%, 200vw)", margin: "0 auto" }}>
       <div className="flex items-center max-w-screen-sm w-full gap-1 mt-2 mb-6">
         <input
+          ref={inputRef} // Attach ref to the input field
           type="text"
           placeholder="Type a URL"
           value={url}
