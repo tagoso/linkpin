@@ -30,6 +30,6 @@ URLL is a **100% on-chain, secure, and decentralized bookmark manager**. Built o
 
 My deepest gratitude goes to [@kristoferlund](https://github.com/kristoferlund) for maintaining the following NPM packages. These libraries were indispensable in bringing URLL to life!
 
-- **[`ic-use-internet-identity`](https://www.npmjs.com/package/ic-use-internet-identity)**: This package offers a seamless and intuitive way to integrate Internet Identity (II) authentication into React applications. Without it, URLL's smooth login functionality wouldn't have been possible.
+- **[`ic-use-internet-identity`](https://github.com/kristoferlund/ic-use-internet-identity)**: This package offers a seamless and intuitive way to integrate Internet Identity (II) authentication into React applications. Without it, URLL's smooth login functionality wouldn't have been possible.
 
-- **[`ic-use-actor`](https://www.npmjs.com/package/ic-use-actor)**: Simplifies managing actors on the Internet Computer, making interactions with canisters straightforward and maintainable.
+- **[`ic-use-actor`](https://github.com/kristoferlund/ic-use-actor)**: Simplifies managing actors on the Internet Computer, making interactions with canisters straightforward and maintainable.
