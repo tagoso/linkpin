@@ -6,7 +6,7 @@ export default function LoginInfo({ className }: { className?: string }) {
         <img alt="ICP Logo 100% on-chain" className="mt-2 w-60 h-auto" src="/icpLogo.svg" />
       </div>
       <a
-        href="https://github.com/your-repository-url"
+        href="https://github.com/tagoso/urll"
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-800 underline"
