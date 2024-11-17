@@ -12,7 +12,7 @@ function App() {
   const principal = identity ? identity.getPrincipal().toText() : undefined;
 
   return (
-    <div className="flex flex-col w-full min-h-screen poppins text-base bg-gradient-to-b from-pink-100 to-pink-50">
+    <div className="flex flex-col w-full min-h-screen poppins text-base bg-gradient-to-b from-pink-200 to-pink-50">
       {identity ? (
         <div className="flex flex-col w-full gap-5 p-10 sm:p-10 md:p-16 lg:p-16 items-start">
           <div className="flex items-center">
