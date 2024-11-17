@@ -16,6 +16,8 @@ export function Entry() {
   const { identity } = useInternetIdentity(); // Getting the identity from Internet Identity
   const [url, setURL] = useState<string>(""); // Single input field for URL
   const [entries, setEntries] = useState<Entry[]>([]); // State to hold all entries
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for the Save button
+  const [loadingDeletes, setLoadingDeletes] = useState<string[]>([]); // URLs currently being deleted
   const [isAscending, setIsAscending] = useState<boolean>(true); // State to track alphabetical sort order
   const [isCountAscending, setIsCountAscending] = useState<boolean>(false); // State to track click count sort order
   const [isLastVisitAscending, setIsLastVisitAscending] = useState<boolean>(true); // State to track last visit sort order
@@ -74,21 +76,40 @@ export function Entry() {
       return;
     }
 
-    await backend.insert(formattedUrl);
+    setIsLoading(true); // Start loading
 
-    // Add the new entry at the beginning of the entries list
-    setEntries([
-      { url: formattedUrl, clickCount: BigInt(0), lastClicked: null, time: Math.floor(Date.now() / 1000).toString() },
-      ...entries,
-    ]);
-    setURL("");
+    try {
+      await backend.insert(formattedUrl);
+
+      // Add the new entry at the beginning of the entries list
+      setEntries([
+        { url: formattedUrl, clickCount: BigInt(0), lastClicked: null, time: Math.floor(Date.now() / 1000).toString() },
+        ...entries,
+      ]);
+      setURL(""); // Reset the input field
+    } catch (error) {
+      console.error("Error inserting entry:", error);
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
   }
 
   // Function to delete an entry
   async function handleDelete(url: string) {
     if (!backend || !identity) return;
-    await backend.deleteEntry(url); // Call backend to delete the entry
-    setEntries(entries.filter((entry) => entry.url !== url)); // Remove the deleted entry from the list
+
+    // Add the URL to the loading state
+    setLoadingDeletes((prev) => [...prev, url]);
+
+    try {
+      await backend.deleteEntry(url); // Call backend to delete the entry
+      setEntries(entries.filter((entry) => entry.url !== url)); // Remove the deleted entry from the list
+    } catch (error) {
+      console.error("Error deleting entry:", error);
+    } finally {
+      // Remove the URL from the loading state
+      setLoadingDeletes((prev) => prev.filter((loadingUrl) => loadingUrl !== url));
+    }
   }
 
   // Function to increment click count when URL is clicked
@@ -135,7 +156,7 @@ export function Entry() {
 
   // Function to sort entries alphabetically based on the formatted URL (without http, www, etc.)
   const handleSortAlphabetically = () => {
-    const sortedEntries = [...entries].sort((a, b) => {
+    const sortedEntries = [...entries].sort((b, a) => {
       const formattedA = formatUrl(a.url);
       const formattedB = formatUrl(b.url);
       return isAscending ? formattedA.localeCompare(formattedB) : formattedB.localeCompare(formattedA);
@@ -245,8 +266,23 @@ export function Entry() {
           className="w-full max-w-screen-sm bg-slate-50 border border-gray-300 rounded-md p-2"
         />
 
-        <button onClick={handleInsert} className="mt-2 mb-2">
-          Save
+        <button
+          onClick={handleInsert}
+          className="ml-2 mt-2 mb-2 flex items-center justify-center h-5 w-5"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle className="opacity-0" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          ) : (
+            <span>Save</span>
+          )}
         </button>
       </div>
 
@@ -268,10 +304,32 @@ export function Entry() {
         </button>
         <ul className="list-none p-0 m-0 max-w-screen-sm w-full	">
           {entries.map((entry, index) => (
-            <li key={index} className="flex items-center mb-0.5 mt-2 break-words	">
+            <li key={index} className="flex items-center mb-0.5 mt-2 break-words">
               {isEditMode && (
-                <button onClick={() => handleDelete(entry.url)} className="mr-0.5 shrink-0">
-                  🗑️
+                <button
+                  onClick={() => handleDelete(entry.url)}
+                  className="mr-0.5 shrink-0 flex items-center justify-center h-5 w-5"
+                  disabled={loadingDeletes.includes(entry.url)}
+                >
+                  {loadingDeletes.includes(entry.url) ? (
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-0"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    "🗑️"
+                  )}
                 </button>
               )}
               {!isEditMode ? (
@@ -281,9 +339,9 @@ export function Entry() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => handleClickCountIncrement(entry.url)}
-                    className="no-underline	text-inherit"
+                    className="no-underline text-inherit"
                   >
-                    {formatUrl(entry.url)}{" "}
+                    {formatUrl(entry.url)}
                   </a>
                   <span className="text-sm text-gray-400">
                     ({entry.clickCount.toString()}, {formatElapsedTime(entry.lastClicked)})
