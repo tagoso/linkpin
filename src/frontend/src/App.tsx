@@ -22,7 +22,7 @@ function App() {
           <Entry />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center flex-grow">
+        <div className="flex flex-col items-center justify-center flex-grow max-h-full">
           <Logo className="w-60 h-auto" />
           <LoginButton />
           <LoginInfo className="w-60 h-auto" />
