@@ -5,7 +5,7 @@ URLL is live. Start today!
 
 <img src="https://raw.githubusercontent.com/tagoso/urll/refs/heads/main/src/frontend/public/URLL-logo-long-white-background.png" alt="Long URLL Logo" style="max-width: 160px; width: 100%; height: auto;">
 
-URLL (short for URL List 😉) is a **100% on-chain, secure, and decentralized bookmark manager**. Built on the Internet Computer (ICP), it ensures that all your bookmarks are securely stored, tamper-proof, and accessible from anywhere. With URLL, your URLs are completely under your control—no intermediaries, no data servers.
+URLL (short for URL List 😉) is a **100% on-chain, secure, and decentralized bookmark manager**. Built on the [`Internet Computer (ICP)`](https://internetcomputer.org/), it ensures that all your bookmarks are securely stored, tamper-proof, and accessible from anywhere. With URLL, your URLs are completely under your control—no intermediaries, no data servers.
 
 ## How to Use
 
