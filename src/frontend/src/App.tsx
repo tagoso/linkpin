@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="flex flex-col w-full min-h-screen poppins text-base bg-gradient-to-b from-pink-50 to-pink-200">
       {identity ? (
-        <div className="flex flex-col w-full gap-5 p-10 sm:p-10 md:p-16 lg:p-16 items-start">
+        <div className="flex flex-col w-full gap-5 p-10 sm:p-10 md:p-16 lg:p-16 items-start overflow-auto">
           <div className="flex items-center">
             <LoginButton />
             <Principal principal={principal} />
@@ -22,7 +22,7 @@ function App() {
           <Entry />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center flex-grow">
+        <div className="flex flex-col items-center justify-center flex-grow overflow-auto">
           <Logo className="w-60 h-auto" />
           <LoginButton />
           <LoginInfo className="w-60 h-auto" />
