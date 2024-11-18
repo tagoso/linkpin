@@ -409,7 +409,7 @@ export function Entry() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => handleClickCountIncrement(entry.url)}
-                      className="break-words no-underline text-inherit hover:underline active:underline"
+                      className="break-all no-underline text-inherit hover:underline active:underline"
                     >
                       {formatUrl(entry.url)}{" "}
                     </a>
