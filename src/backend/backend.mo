@@ -24,6 +24,8 @@ actor {
     // Runtime state
     private var userBookmarks = Map.HashMap<Principal, UserBookmarks>(0, Principal.equal, Principal.hash);
 
+    private let MAX_ENTRIES : Nat = 200;
+
     // Helper function to get or create a user's bookmark map
     private func getUserBookmarkMap(user : Principal) : UserBookmarks {
         switch (userBookmarks.get(user)) {
@@ -43,15 +45,18 @@ actor {
         let caller = msg.caller;
         let userBookmark = getUserBookmarkMap(caller);
 
-        let timestamp = Time.now();
-        let formattedTime = Int.toText(timestamp / 1_000_000_000);
-        let entryWithTime = {
-            url = url;
-            time = formattedTime;
-            clickCount = 0;
-            lastClicked = null;
+        // Skip addition if current number of entries is 200 or more
+        if (userBookmark.size() < MAX_ENTRIES) {
+            let timestamp = Time.now();
+            let formattedTime = Int.toText(timestamp / 1_000_000_000);
+            let entryWithTime = {
+                url = url;
+                time = formattedTime;
+                clickCount = 0;
+                lastClicked = null;
+            };
+            userBookmark.put(url, entryWithTime);
         };
-        userBookmark.put(url, entryWithTime);
     };
 
     // Delete an entry by URL for the caller
