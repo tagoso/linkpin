@@ -1,11 +1,11 @@
-# URLL: A Simple Bookmark Manager
+# Linkpin: A Simple Bookmark Manager
 
-URLL is live. Start today!
-[`https://urll.tago.so/`](https://urll.tago.so/)
+Linkpin is live. Start today!
+[`https://linkpin.tago.so/`](https://linkpin.tago.so/)
 
-<img src="https://raw.githubusercontent.com/tagoso/urll/refs/heads/main/src/frontend/public/URLL-logo-long-white-background.png" alt="Long URLL Logo" style="max-width: 160px; width: 100%; height: auto;">
+<img src="https://raw.githubusercontent.com/tagoso/linkpin/refs/heads/main/src/frontend/public/linkpin-logo-long-white-background.png" alt="Long Linkpin Logo" style="max-width: 160px; width: 100%; height: auto;">
 
-URLL (short for URL List 😉) is a **100% on-chain, secure, and decentralized bookmark manager**. Built on the [`Internet Computer(ICP)`](https://internetcomputer.org/), it ensures all your bookmarks are securely stored, tamper-proof, and accessible from anywhere!
+Linkpin is a **100% on-chain, secure, and decentralized bookmark manager**. Built on the [`Internet Computer(ICP)`](https://internetcomputer.org/), it ensures all your bookmarks are securely stored, tamper-proof, and accessible from anywhere!
 
 ## How to Use
 
@@ -31,8 +31,8 @@ URLL (short for URL List 😉) is a **100% on-chain, secure, and decentralized b
 
 ## Acknowledgments
 
-My deepest gratitude goes to [@kristoferlund](https://github.com/kristoferlund) for maintaining the following NPM packages. These libraries were indispensable in bringing URLL to life!
+My deepest gratitude goes to [@kristoferlund](https://github.com/kristoferlund) for maintaining the following NPM packages. These libraries were indispensable in bringing Linkpin to life!
 
-- **[`ic-use-internet-identity`](https://github.com/kristoferlund/ic-use-internet-identity)**: This package offers a seamless and intuitive way to integrate Internet Identity (II) authentication into React applications. Without it, URLL's smooth login functionality wouldn't have been possible.
+- **[`ic-use-internet-identity`](https://github.com/kristoferlund/ic-use-internet-identity)**: This package offers a seamless and intuitive way to integrate Internet Identity (II) authentication into React applications. Without it, Linkpin's smooth login functionality wouldn't have been possible.
 
 - **[`ic-use-actor`](https://github.com/kristoferlund/ic-use-actor)**: Simplifies managing actors on the Internet Computer, making interactions with canisters straightforward and maintainable.

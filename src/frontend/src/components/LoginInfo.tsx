@@ -9,7 +9,7 @@ export default function LoginInfo({ className }: { className?: string }) {
         <img alt="ICP Logo 100% on-chain" className="h-auto" src="/icpLogo2.png" />
       </div>
       <a
-        href="https://github.com/tagoso/urll"
+        href="https://github.com/tagoso/linkpin"
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-300 underline transition ease-in-out delay-150 hover:text-blue-600 mt-2"

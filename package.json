@@ -1,15 +1,15 @@
 {
-  "name": "urll",
+  "name": "linkpin",
   "version": "1.0.0",
   "description": "Bookmark manager 100% on-chain",
   "author": "Tago So <hi@tago.so>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tagoso/urll"
+    "url": "https://github.com/tagoso/linkpin"
   },
-  "bugs": "https://github.com/tagoso/urll/issues",
-  "homepage": "https://urll.tago.so",
+  "bugs": "https://github.com/tagoso/linkpin/issues",
+  "homepage": "https://linkpin.tago.so",
   "keywords": [
     "bookmark manager",
     "on-chain",
