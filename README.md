@@ -1,9 +1,14 @@
 # Linkpin: Bookmark on Blockchain
 
-Linkpin is live. Start today!
 [`https://linkpin.tago.so/`](https://linkpin.tago.so/)
 
+**Linkpin is featured on Product Hunt!**
+
+<a href="https://www.producthunt.com/posts/linkpin-2?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-linkpin&#0045;2" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=631905&theme=light" alt="Linkpin - Bookmark&#0032;on&#0032;Blockchain | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
+<!--
 <img src="https://raw.githubusercontent.com/tagoso/linkpin/refs/heads/main/src/frontend/public/linkpin-logo-long-white-background.png" alt="Long Linkpin Logo" style="max-width: 160px; width: 100%; height: auto;">
+-->
 
 Linkpin is a **100% on-chain, secure and simple bookmark manager**. Built on the [`Internet Computer(ICP)`](https://internetcomputer.org/), it ensures all your bookmarks are securely stored, tamper-proof, and accessible from anywhere!
 
