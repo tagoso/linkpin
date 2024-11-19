@@ -81,9 +81,9 @@ export function Entry() {
   async function handleInsert() {
     if (!backend || !identity) return;
 
-    // Prevent saving more than 200 URLs
-    if (entries.length >= 200) {
-      alert("You can only save up to 200 URLs.");
+    // Prevent saving more than 100 URLs
+    if (entries.length >= 100) {
+      alert("You can only save up to 100 URLs.");
       return;
     }
 
