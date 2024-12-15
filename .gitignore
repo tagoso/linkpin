@@ -58,7 +58,6 @@ vite.cache/
 tailwind.config.js.__cache__
 
 # Lock files
-pnpm-lock.yaml
 yarn.lock
 
 # System files
