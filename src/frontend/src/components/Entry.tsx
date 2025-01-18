@@ -351,7 +351,7 @@ export function Entry() {
           🔀
         </button>
         <button onClick={handleToggleEdit} className="m-1.5">
-          {isEditMode ? "Save" : "Edit"}
+          {isEditMode ? "Edited ✅" : "Edit"}
         </button>
         <ul className="list-none p-0 m-0 max-w-screen-sm w-full">
           {isEntriesLoading ? (
